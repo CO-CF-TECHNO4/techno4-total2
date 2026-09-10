@@ -1,0 +1,79 @@
+{
+  "name": "techno4-total",
+  "version": "2.0.0",
+  "description": "Techno4 Framework 2 Headless Total.js v5 engine and Tangular integration",
+  "main": "index.js",
+  "module": "index.mjs",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    },
+    "./tangular": {
+      "import": "./tangular.mjs",
+      "require": "./tangular.js"
+    },
+    "./client": {
+      "import": "./client.mjs",
+      "require": "./client.js"
+    },
+    "./serial": {
+      "import": "./serial.mjs",
+      "require": "./serial.js"
+    },
+    "./audio": {
+      "import": "./audio.mjs",
+      "require": "./audio.js"
+    },
+    "./midi": {
+      "import": "./midi.mjs",
+      "require": "./midi.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "serialport": "^13.0.0",
+    "node-web-audio-api": "^2.2.0",
+    "easymidi": "^3.2.0"
+  },
+  "bin": {
+    "techno4-total": "./bin/total5",
+    "t4-total": "./bin/total5",
+    "total5": "./bin/total5",
+    "flow5": "./bin/flow5"
+  },
+  "scripts": {
+    "test": "node tests/run.js"
+  },
+  "files": [
+    "bin",
+    "*.js",
+    "*.mjs",
+    "*.html",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:CO-CF-TECHNO4/techno4-total2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CO-CF-TECHNO4/techno4-total2/issues"
+  },
+  "keywords": [
+    "techno4",
+    "techno4-framework",
+    "techno4-total",
+    "total.js",
+    "total5",
+    "tangular",
+    "headless",
+    "actions",
+    "schemas",
+    "flowstream",
+    "websocket"
+  ],
+  "author": "CO «CF TECHNO4» <office@techno4.online>",
+  "license": "LGPL-3.0-or-later",
+  "homepage": "https://techno4.online"
+}

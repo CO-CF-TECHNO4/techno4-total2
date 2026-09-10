@@ -1,0 +1,369 @@
+========================
+0.0.19
+========================
+
+- fixed binding origin in the FlowStream
+- fixed `restart` FlowStream
+- added an additional `check` for invalid hex values in `F.decrypt()`
+- added loading stats after loading the framework (due to Flow)
+- added support for auto-loading `index.flow` file in the plugins folder
+- extended `NEWACTION` by adding a new handler: `onoutput: function(err, response, $)`
+- extended `NEWACTION` by adding a new handler: `oninput: function($)`
+- extended action's `$` by adding `$.input` property (alias for the `$.model`)
+- fixed handling errors in the `NEWTRANSFORM()` method
+- extended `flowinstance.save(redraw = true)` method by adding `redraw` argument
+- removed watcher for the `.flow` files
+- fixed CSS compiler
+- improved FlowStream stats by adding `online` editors
+- extended FlowStream by adding `instance.activity(key, name, [progress])` method
+- extended `NEWACTION.route` option by adding support for `true` that adds `API ?` value
+- fixed directory in the start information
+
+========================
+0.0.18
+========================
+
+- fixed handling static files
+- added `flow.proxytimeout {Number}` property
+- extended the `message.send(output, data, [clone_data], [check(from, to, output, input)])` method by adding `check` argument
+- extended `LDAP()` options by adding a new option `attributes = { thumbnailPhoto: 'buffer' }` for custom parsing data
+- fixed Flow error handling
+- updated Total.js debug watcher to detect incomplete file writes
+- fixed current working directory in the HTTP server in the `total5` binary
+- fixed CSS minificator
+
+========================
+0.0.17
+========================
+
+- fixed error handling in emails
+- improved returing `origin` in the CORS
+- fixed removing routes via `route.remove()` method
+- fixed `beautify` and `replacer` arguments in the `controller.json()`
+- fixed `mail` priority
+- fixed `kB` and `GB` units in the routing as upload limits
+- `DEBUG` is set according to the `process.env.NODE_ENV` variable
+- fixed server pinging of all WebSocket connections
+- improved code
+- fixed typo in send method data assignment
+- added `PROXYCLIENT(proxyserver, ip:port, [logger])` method
+- added `PROXYSERVER(endpoint, socketendpoint, [logger])` method
+- added `AIMODEL.tool(content, [merge])` method
+- added `AIPARSER(provider)` method for parsing AI responses
+- extended `String.prototype` by adding the `String.parseContext()` method to parse a specific text file format
+- added `ACTION().config(obj)` method
+- added a new property `flow.instance.repo = {}` for storing additional data for Flow node instances
+- fixed `Utils.filestreamer()` method
+- improved `Utils.filestreamer()` method by adding percentage
+- fixed sending data to all outputs `$.send(null, [data])` in the FlowStream
+- fixed sending data to all outputs `instance.send(null, [data])` in the FlowStream
+- fixed removing WebSocket route
+
+========================
+0.0.16
+========================
+
+- improved loading plugins
+- framework reads a `/config` file in `plugins`
+- added `RESTBuilder.?.logerror()` method for printing errors into the console
+- added `API.?.logerror()` method for printing errors into the console
+- fixed handling of unexpected problems in the Flow with the main process becoming disconnected
+- fixed `uptime` value in the framework stats
+- improved auditlogs by adding `files`
+- fixed unexpected errors when compressing/decompressing data via WebSocket
+- fixed processing TMS data in the FlowStream
+- added a new config key `CONF.$httpcacheoffset` for extending `last-modified` header
+- exended `Total.download()` by adding `size {Number}` property to the response
+- extended FlowStream by adding the ability to execute Total.js actions
+- added a new global event `ON('flowstream', function(instance) {`
+- added new action methods `$.progress(percentage)` and `ACTION().progress(console.log)` to measure percentage
+- fixed Total error handling
+- improved compiling navigation in the CMS compiler
+- fixed filling of the `template` property in the CMS compiler
+- added a new method `U.aistreamer(on_line, on_message)`
+- added `Flow.edit(proxy_socket_url)` method for the remote editing of the FlowStream
+- added a new global methods `AIMODEL()` and `NEWAIMODEL()`
+- added `exec` command to the remote editing functionality
+- always set `cwd` directory for the current executed script
+- added `timeout {Number}` property into the `NEWACTION` method
+- extended `NEWAPI(type, [config], config)` by adding the `config` argument
+- replaced `Url.parse()` with `new URL()`
+- fixed `NEWFORK()` method
+- fixed callback with `$` in the `ACTION().callback($)`
+- fixed returing a default JSON schema object in actions
+- added support for nested inline action schemas in action schemas
+- fixed loading of `totalapi` key via `LOADCONFIG()`
+- changed `SIGTERM` for `SIGKILL` in the `NEWFORK()` method
+- extended `data` object in the `DEF.onAudit` delegate by adding `sessionid {String}` property
+- fixed promise in the `AJAX()` method
+- added `options.timeout {Number}` to the `WebSocketClient`
+- extended `U.chunker()` by adding `.load([callback])` method for loading existing chunks
+
+========================
+0.0.15
+========================
+
+- fixed nested objects in JSON schemas
+- improved `keepalive` option in the `REQUEST()` method (it can contain HttpAgent or options for it)
+- updated `RESTBuilder.keepalive()` method by adding `val` argument
+- fixed column indexer in the CSV parser
+- fixed proxy timeout
+- fixed string slug method
+- fixed an issue with generating file names when merging files directly in the view engine
+- fixed handling of case-sensitive file names
+- fixed unexpected errors with the stream when handling static files
+- added support for `.webmanifest` file extension
+- fixed sending mail attachments
+- fixed creating an empty object according to the nested JSON schema
+- added a new JSON Schema type `DataURI2` that keeps a value as text
+- fixed handling unexpected errors in the FlowStream
+- improved error handling in the Flow engine
+- fixed network connection problems in remote editing
+- fixed throwing of timeout error in WebSocketClient
+
+========================
+0.0.14
+========================
+
+- fixed loading plugin files (only `.js` files will load)
+- removed loading of `.DS_STORE` files in plugins
+- added watcher for `extensions/*.html` files
+- __breaking change__: the audit logs object has been changed:
+	- `username` renamed to `createdby`
+	- `schema` renamed to `action`
+- disabled auto-cleaning files in FlowStream workers
+- improved loading static files in release mode
+- added support for `HEAD` method
+- fixed file routing
+- added support for handling specific file extensions in the form `ROUTE('FILE *.php', ...)`
+- improved parsing `<links>` in the markdown parser
+- fixed a check of the file body for JPEG files during the upload process
+- added `/version` file that can contain a version
+- fixed language in the `TEMPLATE`
+
+========================
+0.0.13
+========================
+
+- added auto script loader for `extensions` directory
+- added auto script loader for `transforms` directory
+- added support for Python scripts in the `pypelines` folder
+- added `PYPELINE(name, [options])` method starts a python process
+- added support for custom View engine helpers `DEF.helpers.myhelper`
+- fixed killing workers and pypelines
+- added a feature that kills worker flow instances when the main process is terminated
+- extended `Total.readfile(path, [type])` by adding a new type `datauri`
+- fixed returing collections from the `HTMLParser.find()` method
+- added `extend:String` option in `NEWACTION()` method
+- added `FILECACHE(id, expire, callback, maker, encoding)` method
+- fixed linking errors with the resource files
+- added `RESTBuilder.?.base64()` method which returns the response in BASE64 format
+- added support for custom errors in the Total.js Inline JSON Schemas, example: `id:UID // Invalid identifier, ...`
+- added `ErrorBuilder.throw()` method which throws an error when an error is pushed
+- fixed `HTMLParser.?.find()` method (fixed results)
+- extended `QueryBuilder.gridfilter()` by adding `=EXACT_VALUE` or `=EXACT_VALUE1,EXACT_VALUE2`
+- IMPORTANT: updated `RESTBuilder` XML response, now it returns `HTMLParser` output
+- fixed removing of multiple spaces in the `String.toName()` method
+- fixed a problem with case-sensitive characters in the route parameters
+- fixed markdown parser
+- added missing ViewEngine `@{meta(...)}` method
+- fixed `expires` argument in the `$.cookie(key, value, expires|options)` method
+- fixed HTMLParser for XML, added support for `<!CDATA[[`
+- added `outerHTML` property for the HTMLParser element
+- improved `HTMLParser.text()` method
+- added a new view engine property `@{version}` that appends `?ts=start_app_timestamp`
+- extended `@{import()}` method now supports `@style_name.css` and `@script_name.js` (due to HTTP cache reasons, it automatically appends the argument `?ts=start_app_timestamp` to the URL)
+- fixed loading extensions
+- fixed unit-tests for HTMLParser
+- added `Total.syslog(msg)` method for internal app logging
+- added auto audit logs to Actions in the form: `NEWACTION({ ... audit: 'Executed by {{ $.user.name }}' })`
+- added `called {Number}` property per action in the `F.actions` collection
+- fixed `CONF.$root` functionality
+- improved `F.backup()` by adding internal ignore list for `.DS_Store` and `.gitignore` files
+- fixed `CONF.$root` in proxies
+
+========================
+0.0.12
+========================
+
+- fixed `$.status()` calling
+- added support for schemas in the `QueryBuilder.autoquery(..., '@schema_name')` method
+- extended `NEWACTION` cache with additional `input` key
+- updated download procedure in the `COMPONENTANTOR()` method
+
+========================
+0.0.11
+========================
+
+- fixed `controller` and `user` argument in the `TRANSFORM()` method
+- fixed assigning `user`, `query` and `params` properties in the `$.action()` method
+- fixed nullable `value` argument in the `querybuilder.permit()`
+- fixed parsing `CONF.version`
+- added `QueryBuilder.pipe()` method as alias to `QueryBuilder.callback()`
+- added `API.pipe()` method as alias to `API.callback()`
+- added `Action.pipe()` method as alias to `Action.callback()`
+- added `RESTBuilder.pipe()` method as alias to `RESTBuilder.callback()`
+- added support for localization in the `TEMPLATE()` method
+
+========================
+0.0.10
+========================
+
+- improved HTMLParser parser
+- extended `Flow.socket(flow, socket, [verify(client)], [check(client, msg)])` by adding `check` argument for verifying permissions
+- fixed icons in FlowStream core for TMS
+
+========================
+0.0.9
+========================
+
+- added missing method `NEWMIDDLEWARE()`
+- fixed parsing `user-agent`
+- fixed `Message-ID` generator for email messages
+- improved `Number.round()` by [Tomáš Novák](https://github.com/tomee03)
+- added missing `$.hostname()` method in the `WebSocketController`
+- added missing `$.address` property in the `WebSocketController`
+- replaced `$.hostname` property with a method in the Schema/Auth Options
+- __critital__ fixed cloning buffers in the `FlowStream`
+- improved user-agent parser
+- added `FILESTORAGE().clone(id, newid, [callback])` method
+- fixed `FILESTORAGE().copy(id, newid, [callback])` method
+- extended `PROXY(endpoint, stream_function(ctrl))` by adding support for a custom handler
+- extended `REQUEST()` by adding `opt.writer {function(res)}` option
+- added missing `TotalAPI()` method
+- fixed `CONF.totalapi` key when initializing the framework
+- added support for plugins in `TEMPLATE()` method
+- fixed decoding of encoded HTML entities in the HTML parser
+- fixed loading `empty` flow in `Flow.load()` method
+
+========================
+0.0.8
+========================
+
+- added `opt.retry()` method in to the `API` evaluation
+- improved HTTP cache in debug mode
+- added `Total.edit('socket_url')` for remote editing of source code
+- added support for `scripts` folder
+- added Total.remote('wss_totaljs_code_url') method for remote editing of the source-code
+- added a better support for `*:tagname` prefixes in HTMLParser
+- fixed context in the components
+- fixed URL downloading templates in `TEMPLATE()` method
+- fixed parsing of unpaired elements in HTMLParser
+- added support for `log` extension in static file processing
+- fixed selectors in the HTMLParser
+- added `$.hostname {String}` to the `SchemaOptions`
+- fixed `RESTBuilder.promise()`
+
+========================
+0.0.7
+========================
+
+- improved user-agent parser (added support for new headers `Sec-CH-UA`)
+- improved `Number.pluralize()` method
+- reduced DNS cache flush time to 3 minutes
+- added `$.address` property with the absolute URL address
+- added `$.ctrl(ctrl_instance)` method
+- extended `Mail.from(email, [name])` method by adding `name` argument by [Marek Mráz](https://github.com/Mrazbb)
+- added `CONF.mail_from_name {String}` option
+- improved `$.query` parser
+- improved `Total.run()` method
+- added a new method `NEWCOMPONENT(html_or_URL_or_name, [callback])`
+	- it compiles a FlowStream component to a method
+- extended FlowStream by adding support for `input` and `output` Total.js inline schemas
+- fixed memory usage in the Flow in non-worker mode
+- improved Flow error handling
+- improved HTML parser
+- improved `controller.view()` supports calling without arguments
+- extended ViewEngine by adding `view.renderlayout(name, content)` method
+
+========================
+0.0.6
+========================
+
+- unified debug and release mode
+	- they use monitoring files
+	- monitoring can be disabled via `options.watcher = false` in the start script
+- improved watcher interval for a long-term process
+- extended `edit` mode:
+	- added `restart` command
+- fixed partial validation
+- fixed permissions error handling in actions
+- added `Image` global variable
+- added `Utils.filestreamer(filename, onbuffer(buffer, next), onend, [buffer_size])`
+- fix image bug in the `Image.measureWEBP()` method by [Marek Mraz](https://github.com/Mrazbb)
+- added `action.status(fn)` for handling and `$.status(value)` for calling in actions
+- added HTTP auto-redirect for `WebSocketClient`
+- added support for WebSocket redirections in the remote edit
+- fixed `CACHE.read()`
+- added a new argument `size {Number}` to the `WebSocket.on('message', function(client, msg, [size]))` event
+- fixed `@{href()}` command in the ViewEngine
+- improved config & resource parser by adding support for `=` between key and value and for `#` as a comment
+- removed `@{url()}` method and added `@{url}` property
+- added `@{hostname([url])}`
+- added `controller.href()` method
+- extended `HTMLParser` by adding selector for prefixes, example: `node.find('xsd:')`
+- fixed parsing attributes with the `_` character in the `HTMLParser`
+- fixed parsing unpair XML elements in the `HTMLParser`
+- improved Markdown parser
+- added a test functionality for testing Flow components
+- added `F.extend(prototype, name, fn)` for extending Total.js prototypes
+- fixed assigning the `name` field in FlowStream
+- fixed prerendering UI after manual using `Flow.add()` method
+- added `Array.group(key)` method
+- fixed `HTMLParser` by [Marek Mraz](https://github.com/Mrazbb)
+- added a new alias `String.parseElements()` to `String.parseComponent()`
+- added a new method `CMS.run(widget_html)`
+- added a support for middleware for actions
+- added a new method `U.paginate(page, pages, [max])`
+
+========================
+0.0.5
+========================
+
+- added support for multiple events `ON('event1 + event2 + event3', function() {})`
+- fixed parsing nested schema in inline JSON schemas
+- added support for `|` characters in the routes API endpoints
+
+========================
+0.0.4
+========================
+
+- improved `Number.pluralize()` method
+- added `PROMISIFY(fn, [a], [b])` method
+- added `$.promisify(fn, [a], [b])` method
+- added `FILESTORAGE().copy(id, path, [callback(err, meta)])`
+- fixed formatting `0` number in the `Tangular.format` helper
+- improved `$.invalid()` method, now it returns `ErrorBuilder`
+- improved `$.callback()`, it accepts another instance of `$`
+- improved `DATA.query()` method
+- fixed removing existing CRONs by [Marek Mraz](https://github.com/Mrazbb)
+
+========================
+0.0.3
+========================
+
+- extended icon validator by adding support for `tic` keyword
+- added new events `ON('request')`, `ON('controller')` and `ON('websocket')`
+- fixed applying the `$insecure` option in the FlowStream
+- fixed routing for unexpected content-type
+- added `controller.authorize([callback])` method
+- improved `translate` command in `total5` command-line tool
+- fixed link generator for email and phone numbers in `Markdown`
+- fixed auto-restarting app in the `debug` mode with bundles
+- fixed global settings for JS/CSS/HTML minificator
+- improved merging files
+- fixed middleware with `_` underscore character in routes
+- fixed `CORS()` method
+- improved `CORS` checker
+- added support for inheriting inline schemas in the form e.g. `id:String,@address,@products`
+- added `ctrl.image(opt)` method
+- extended `ctrl.filefs()` method by returing `opt` object
+- extended `QueryBuilder.userid()` by supporting `$` options/controller instance
+- added `controller.action()`
+- improved `controller.authorize()` it assigns `controller.user` automatically
+
+========================
+0.0.2
+========================
+
+- first release

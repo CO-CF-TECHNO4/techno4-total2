@@ -1,0 +1,8 @@
+node_modules/
+databases/
+logs/
+*.nosql
+*.nosql-wal
+*.log
+.DS_Store
+Thumbs.db

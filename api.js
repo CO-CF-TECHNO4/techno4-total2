@@ -1,0 +1,344 @@
+// API caller
+// The MIT License
+// Copyright 2023 (c) Peter Širka <petersirka@gmail.com>
+
+'use strict';
+
+const REG_BINARY = /image|document|sheet|excel|msword|video|audio|zip|pdf/;
+const REG_TEXT = /^text\/(html|plain|xml)/;
+
+var cache = {};
+
+// Registers a new API type
+exports.newapi = function(type, config, callback) {
+
+	let t = typeof(type);
+
+	if (t === 'function') {
+		callback = type;
+		type = 'default';
+		config = null;
+	} else if (t === 'object') {
+		callback = config;
+		config = type;
+		type = 'default';
+	}
+
+	if (typeof(config) === 'function') {
+		callback = config;
+		config = null;
+	}
+
+	if (type.indexOf(',') !== -1) {
+		var arr = type.split(',').trim();
+		for (var m of arr)
+			exports.newapi(m, config, callback);
+		return;
+	}
+
+	// It can be "camel case"
+	var lower = type.toLowerCase();
+	cache[type] = lower;
+	cache[lower] = lower;
+
+	if (callback)
+		F.apiservices[lower] = { config, callback };
+	else
+		delete F.apiservices[lower];
+
+};
+
+function APIOptions(api) {
+	const t = this;
+	t.api = api;
+	t.retries = 0;
+	t.config = {};
+}
+
+APIOptions.prototype.retry = function() {
+	this.retries++;
+	setImmediate(execapi, this.api);
+};
+
+function APICall() {
+	this.options = new APIOptions(this);
+}
+
+const APICallProto = APICall.prototype;
+
+APICallProto.output = function(type) {
+	this.options.output = type;
+	return this;
+};
+
+APICallProto.promise = function($) {
+	const t = this;
+	const promise = new Promise(function(resolve, reject) {
+		t.$callback = function(err, response) {
+			if (err) {
+				if ($ && $.invalid) {
+					$.invalid(err);
+				} else
+					reject(F.TUtils.toError(err));
+			} else
+				resolve(response);
+		};
+	});
+
+	return promise;
+};
+
+APICallProto.audit = function($, message, type) {
+	const t = this;
+	t.$audit = function() {
+		// Dynamic arguments
+		if (message)
+			message = $.variables(message, t.options.data);
+		$.audit(message, type);
+	};
+	return t;
+};
+
+APICallProto.configure = function(opt) {
+	const t = this;
+	for (let key in opt)
+		t.options.config[key] = opt[key];
+	return t;
+};
+
+APICallProto.done = function($, callback) {
+	const t = this;
+	t.$callback = function(err, response) {
+		if (err)
+			$.invalid(err);
+		else if (callback)
+			callback(response);
+		t.free();
+	};
+	return t;
+};
+
+APICallProto.debug = function() {
+	this.$debug = true;
+	return this;
+};
+
+APICallProto.fail = function(cb) {
+	this.$callback_fail = cb;
+	return this;
+};
+
+APICallProto.data = function(cb) {
+	this.$callback_data = cb;
+	return this;
+};
+
+APICallProto.controller = function($) {
+	this.options.controller = $.controller || $;
+	return this;
+};
+
+APICallProto.file = function(filename, path, name) {
+
+	const t = this;
+
+	if (!t.options.files)
+		t.options.files = [];
+
+	const obj = { name: name || ('file' + t.options.files.length), filename: filename, path: path };
+
+	if (t.options.files)
+		t.options.files.push(obj);
+	else
+		t.options.files = [obj];
+
+	return t;
+};
+
+APICallProto.error = APICallProto.err = function(err, reverse) {
+	this.$error = err + '';
+	this.$error_reverse = reverse;
+	return this;
+};
+
+APICallProto.logerror = function() {
+	this.$loggerror = true;
+	return this;
+};
+
+APICallProto.callback = APICallProto.pipe = function($) {
+	const t = this;
+	t.$callback = typeof($) === 'function' ? $ : $.callback();
+	return t;
+};
+
+APICallProto.evaluate = function(err, response) {
+
+	const t = this;
+	if (!err && t.$error) {
+		if (t.$error_reverse) {
+			if (response)
+				err = t.$error;
+			else if (response instanceof Array && response.length)
+				err = t.$error;
+		} else if (!response)
+			err = t.$error;
+		else if (response instanceof Array && !response.length)
+			err = t.$error;
+	}
+
+	if (t.$logerror)
+		F.error(err, 'API: ' + t.options.name + ' --> ' + t.options.schema);
+
+	if (err) {
+		t.$callback_fail && t.$callback_fail(err);
+	} else {
+		if (t.$audit) {
+			t.$audit();
+			t.$audit = null;
+		}
+		t.$callback_data && t.$callback_data(response);
+	}
+
+	t.$debug && console.log('--DEBUG-- API: ' + t.options.name + ' --> ' + t.options.schema, '|', 'Error:', err, '|', 'Response:', response);
+	t.$callback && t.$callback(err, response);
+};
+
+function execapi(api) {
+	const conn = F.apiservices[cache[api.options.name]] || F.apiservices['*'];
+	if (conn) {
+
+		if (conn.config) {
+			for (let key in conn.config) {
+				if (api.options.config[key] === undefined)
+					api.options.config[key] = conn.config[key];
+			}
+		}
+
+		conn.callback.call(api, api.options, (err, response) => api.evaluate(err, response));
+	} else
+		api.evaluate('API is not initialized');
+}
+
+// Executes API
+exports.exec = function(name, schema, data, $) {
+	const api = new APICall();
+	api.options.name = cache[name] || name;
+	api.options.schema = schema;
+	api.options.data = data;
+	api.options.controller = $;
+	setImmediate(execapi, api);
+	return api;
+};
+
+exports.newapi('TotalAPI,TAPI', function(opt, next) {
+
+	if (!F.config.$tapi && opt.schema !== 'check') {
+		next('totalapi_inactive');
+		return;
+	}
+
+	if (opt.data && typeof(opt.data) !== 'object')
+		opt.data = { value: opt.data };
+
+	const req = {};
+
+	req.method = 'POST';
+	req.url = 'https://' + F.config.$tapiurl + '.api.totaljs.com/' + opt.schema + '/';
+
+	if (opt.files) {
+		req.body = opt.data;
+		req.files = opt.files;
+	} else
+		req.body = JSON.stringify(opt.data);
+
+	req.type = 'json';
+	req.timeout = 60000;
+	req.keepalive = true;
+	req.headers = { 'x-token': opt.token || opt.config.token || F.config.totalapi || F.config.secret_totalapi || F.config.$tapisecret || '-', 'x-app': encodeURIComponent(F.config.name) };
+	req.custom = true;
+
+	req.callback = function(err, response) {
+
+		if (err) {
+			next(err.toString());
+			return;
+		}
+
+		const buffer = [];
+
+		// Error
+		if (response.status > 200) {
+			response.stream.on('data', chunk => buffer.push(chunk));
+			F.cleanup(response.stream, function() {
+				let output = Buffer.concat(buffer).toString('utf8');
+				let response = output.parseJSON();
+				next((response && response[0] && response[0].error) || output);
+			});
+			return;
+		}
+
+		if (!opt.output || opt.output === 'json' || opt.output === 'html' || opt.output === 'plain' || opt.output === 'text' || opt.output === 'base64' || opt.output === 'buffer' || opt.output === 'binary') {
+			response.stream.on('data', chunk => buffer.push(chunk));
+			F.cleanup(response.stream, function() {
+				let output = Buffer.concat(buffer);
+				if (opt.output === 'base64') {
+					output = output.toString('base64');
+				} else if (opt.output !== 'binary' && opt.output !== 'buffer') {
+
+					const type = response.headers['content-type'];
+
+					if (REG_BINARY.test(type)) {
+						next(null, output);
+						return;
+					}
+
+					output = output.toString('utf8');
+
+					if (REG_TEXT.test(type)) {
+						next(null, output);
+					} else if (!opt.output || opt.output === 'json')
+						output = output.parseJSON(true);
+				}
+				next(null, output);
+			});
+			return;
+		}
+
+		if (opt.output === 'stream') {
+			next(null, response.stream);
+			return;
+		}
+
+		// FileStorage in the form: "#name id filename"
+		if (opt.output[0] === '#') {
+
+			var fsdata = null;
+			var fs = null;
+
+			if (opt.output[0] === '#') {
+				fsdata = opt.output.substring(1).split(' ');
+				fs = F.filestorage(fsdata[0]);
+			}
+
+			var type = (response.headers['content-type'] || '').toLowerCase();
+			const index = type.lastIndexOf(';');
+			if (index !== -1)
+				type = type.substring(0, index);
+
+			const ext = type ? F.TUtils.getExtensionFromContentType(type) : 'bin';
+			const id = fsdata[1] || UID();
+			const filename = fsdata[2] || id + '.' + ext;
+
+			response.stream.pause();
+			fs.save(id, filename, response.stream, next);
+			return;
+		}
+
+		const writer = F.Fs.createWriteStream(opt.output);
+		response.stream.pipe(writer);
+		F.cleanup(writer, () => opt.next(null, opt.output));
+	};
+
+	F.TUtils.request(req);
+});
