@@ -70,7 +70,7 @@
     "headless",
     "actions",
     "schemas",
-    "flowstream",
+    "threadsstream",
     "websocket"
   ],
   "author": "Mykola Zghurskyi <mykola@techno4.online>",
