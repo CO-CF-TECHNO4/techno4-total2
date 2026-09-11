@@ -1,7 +1,7 @@
 {
   "name": "techno4-total",
   "version": "2.0.0",
-  "description": "Techno4 Framework 2 Headless Total.js v5 engine and Tangular integration",
+  "description": "TECHNO4 FRAMEWORK2 Headless Total.js v5 engine and Tangular integration",
   "main": "index.js",
   "module": "index.mjs",
   "exports": {
